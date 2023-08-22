@@ -1,0 +1,32 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:5.7
+    container_name: inventory_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'inventory-service'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - spring-postgres
+
+  inventory-service:
+    build: .
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - db
+    ports:
+      - "8887:8080"
+    networks:
+      - spring-postgres
+volumes:
+  my-db:
+
+networks:
+  spring-postgres:
